@@ -1,5 +1,5 @@
 Codeback is a personal knowledge management tool for programmers, mainly solving the collection and query of offline knowledge. 
-Chinese note reads as follows: <https://github.com/tpsimon1/codeback/README_ZH.md>
+Chinese note reads as follows:<https://github.com/tpsimon1/codeback/blob/main/README_ZH.md>
 Main features:
 1. Windows 10/11 use, dependent on .NET Framework 4.8 to run, no other system support plan.
 2. The mode of storing a new file in the sqlite file and creating a new file every month solves the problem of capacity limit.
