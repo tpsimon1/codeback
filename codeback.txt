@@ -1,0 +1,12 @@
+create table t_filelist(fl_code number(20) 编号
+,fl_file blob 文本文件
+,fl_name varchar(30) 文本文件名
+)
+
+create table t_txtlist(tl_code number(20),编号
+tl_time date,日期
+tl_name varchar(50),记录名称
+tl_topcode number(20),上层编号
+tl_content varchar(5000),内容
+tl_keyname varchar(50),关键字
+tl_level number(5) default 0)
