@@ -156,7 +156,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="App.config" />
-    <None Include="codeback.db" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\DataSources\System.Xml.XmlReader.datasource" />
     <None Include="Properties\Settings.settings">

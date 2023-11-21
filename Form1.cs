@@ -13,7 +13,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using WinHtmlEditor;
 using mshtml;
-using mshtmlTextRange = mshtml.IHTMLTxtRange;
+using mshtmlTextRange = mshtml.IHTMLTxtRange; 
 
 namespace codeback
 {
@@ -33,12 +33,15 @@ namespace codeback
 		//新db编号
 		public int newrowtype = 0;
 		//新增数据模式 0本层 1 下层
+
+ 
 		public 窗体()
 		{
 			InitializeComponent();
 			init_load();
-			
-		}
+            ((HTMLDocumentEvents2_Event)this._htmleditor.document).onmouseup += new HTMLDocumentEvents2_onmouseupEventHandler(_htmleditor_Click);
+
+        }
 		void init_load()
 		{
 			find_db();
@@ -454,7 +457,7 @@ namespace codeback
 		}
 
 		private void txt_txt_KeyDown(object sender, KeyEventArgs e)
-		{
+		{ 
 			//ctrl+A
 			if (e.KeyValue == 65 && e.Control) {
 				内容.SelectAll();
@@ -477,19 +480,71 @@ namespace codeback
 					内容.Visible = false;
 					_htmleditor.Visible = true;
 					_htmleditor.Paste();
+                    _htmleditor.Focus();
 
-				} else {
+                } else {
 					内容.Paste();
 					内容.Visible = true;
-					_htmleditor.Visible = false;
+					内容.Focus();
+
+                    _htmleditor.Visible = false;
 				}
 				e.Handled = true;
 				return;
 			}
 		}
-		
 
-		private void 内容_DragEnter(object sender, DragEventArgs e)
+        private void _htmleditor_Click(IHTMLEventObj obj)
+        {
+           
+            _htmleditor.Focus();
+            Comm_outLeave(new object(), null);
+            关键字Leave(new object(), null);
+        }
+
+        private void html_KeyDown(object sender, KeyEventArgs e)
+        {
+			
+            //ctrl+A
+            if (e.KeyValue == 65 && e.Control)
+            {
+                内容.SelectAll();
+                e.Handled = true;
+                return;
+            }
+
+            //ctrl+V
+            if (e.KeyValue == 86 && e.Control)
+            {
+
+
+                if (Clipboard.ContainsText(TextDataFormat.Html))
+                {
+
+
+                    if (MessageBox.Show("是否要HTML转换?", "转换", MessageBoxButtons.YesNo) == DialogResult.No)
+                    {
+                        内容.Paste(DataFormats.GetFormat(DataFormats.Text));
+                        return;
+                    }
+
+                    内容.Visible = false;
+                    _htmleditor.Visible = true;
+                    _htmleditor.Paste();
+
+                }
+                else
+                {
+                    内容.Paste();
+                    内容.Visible = true;
+                    _htmleditor.Visible = false;
+                }
+                e.Handled = true;
+                return;
+            }
+        }
+
+        private void 内容_DragEnter(object sender, DragEventArgs e)
 		{
 			if (e.Data.GetData(typeof(String)) != null) {
 				内容.Text += (string)e.Data.GetData(typeof(String));
@@ -528,7 +583,9 @@ namespace codeback
 		{
 			SQLiteHelper.SetSQLiteHelper(nowdbnumber);
 			SaveFileDialog sfd = new SaveFileDialog();
-			
+			if (file_listView.SelectedCells == null)
+				return;
+
 			string filename = (string)file_listView.SelectedCells[0].Value;
 			sfd.FileName = filename;
 			if (sfd.ShowDialog() != DialogResult.OK)
@@ -547,7 +604,7 @@ namespace codeback
 				MessageBox.Show("请选择结点！");
 				return;
 			}
-			e.Effect = DragDropEffects.None;
+			//e.Effect = DragDropEffects.None;
 			SQLiteHelper.SetSQLiteHelper(nowdbnumber);
 			
 			fileurl = ((string[])e.Data.GetData(DataFormats.FileDrop));
@@ -565,16 +622,21 @@ namespace codeback
 		{
 			file_listView.Height = (file_listView.Rows.Count + 1) * 24;
 			if (file_listView.Height + file_listView.Top > 内容.Top) {
-				内容.Width = 窗体.ActiveForm.Width - panel1.Width - file_listView.Width - 34;
-			}
+				内容.Width = 窗体.ActiveForm.Width - panel1.Width - file_listView.Width - 44;
+				_htmleditor.Width = 窗体.ActiveForm.Width - panel1.Width - file_listView.Width - 44;
+
+            }
 		}
-		
-		
-		
+
+
+
 		void Comm_outLeave(object sender, EventArgs e)
 		{
-			comm_out.Height = 23;
-			comm_out.Top = comm_out.Top + 200;
+			if (comm_out.Height != 23)
+			{
+				comm_out.Height = 23;
+				comm_out.Top = comm_out.Top + 200;
+			}
 		}
 		
 		public void Comm_outEnter(object sender, EventArgs e)
@@ -586,47 +648,45 @@ namespace codeback
 		void 运行Click(object sender, EventArgs e)
 		{
 			try {
-				 
+				
+				运行.Text  = (运行.Text== "运行(&r)" ? "停止": "运行(&r)");
 				string exec_content = "";
 				
 				if (内容.Visible && 内容.SelectedText.Length > 0) {
-								exec_content = 内容.SelectedText;
-							} else if (内容.Visible && 内容.SelectedText.Length == 0)
-								exec_content = 内容.Text;
-							else if (!内容.Visible) {
-								mshtmlTextRange range = (mshtmlTextRange)_htmleditor.document.selection.createRange();
-								HtmlToText convert = new HtmlToText(); 
-								if (range.IsNull())
-									exec_content = convert.Convert(_htmleditor.BodyInnerHTML);
-								else
-									exec_content = convert.Convert(range.htmlText); 
+				exec_content = 内容.SelectedText;
+				} else if (内容.Visible && 内容.SelectedText.Length == 0)
+				exec_content = 内容.Text;
+				else if (!内容.Visible) {
+				mshtmlTextRange range = (mshtmlTextRange)_htmleditor.document.selection.createRange();
+				HtmlToText convert = new HtmlToText(); 
+				if (range.IsNull())
+				exec_content = convert.Convert(_htmleditor.BodyInnerHTML);
+				else
+				exec_content = convert.Convert(range.htmlText); 
 				}
-				
-				
-				
-				foreach (var element in 关键字.Text.Split(';')) { 
-					switch (element.Split('=')[0]) {
-						case "call":
-							var tmpnode = 文件列表树.SelectedNode;
-							SQLiteHelper.SetSQLiteHelper(int.Parse( tmpnode.Tag.ToString()));
-							using (SQLiteDataReader dr = SQLiteHelper.ExecuteDataReader("select * from t_txtlist where tl_code ='" +tmpnode.Name + "';")) {
-								if (dr.Read()) { 
-									 ScriptRun.Run(dr["tl_keyname"].ToString() , dr["tl_content"].ToString(), comm_out);
-								}  
-							}
-					 
-							break;
-						case "lang":
-							
-						 
-							ScriptRun.Run(关键字.Text, exec_content, comm_out); 
-							break; 
-					}	
+
+                Hashtable key_ht = new Hashtable();
+
+				foreach (String key1 in 关键字.Text.Split(';'))
+				{
+					string[] tmp = key1.Split('=');
+					if (tmp.Length > 1)
+					{
+						key_ht.Add(tmp[0], tmp[1]);
+					}
 				}
-				
-				 
-				
-			} catch (Exception ex) {
+
+
+                if (key_ht["lang"] != null)
+                {
+					ScriptRun.Run(key_ht, exec_content, comm_out,运行);
+                }
+
+
+
+
+
+            } catch (Exception ex) {
 				
 				comm_out.Text = ex.Message;
 			} finally {
@@ -636,6 +696,7 @@ namespace codeback
 		
 		void 关键字Leave(object sender, EventArgs e)
 		{
+			 if (关键字.Height != 21)
 			关键字.Height = 21;
 		}
 		

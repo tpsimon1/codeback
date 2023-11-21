@@ -7,8 +7,9 @@
  * 要改变这种模板请点击 工具|选项|代码编写|编辑标准头文件
  */
 using System;
+using System.Collections;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Windows.Forms; 
 
 namespace codeback
 {
@@ -20,42 +21,58 @@ namespace codeback
 		public ScriptRun()
 		{
 		}
-		public static async void Run(String key_word, String exec_content,RichTextBox tb)
+		public static async void Run(Hashtable key_ht, String exec_content, RichTextBox tb,Button runc)
 		{
-			
-		  		if (key_word.IndexOf("lang=") == -1) { 
+			 
+			String cron = "";
+			 
+
+				if (key_ht["lang"].Equals(null))
+				{
 					throw new Exception("缺少关键字lang=");
 				}
-		  
-			
 
-            var doSomething = new Action(() => {
-                String out_content = null;
-                String key = key_word.Substring(key_word.IndexOf("lang=") + 5);
-                key = key.Substring(0, key.IndexOf(';'));
-                switch (key) {
-					case "Print":
-						out_content = CSScript.Print(key_word.Replace("lang=Print;", ""), exec_content);
-						break;
-					case "Cmd":
-						out_content = Cmd.Run(exec_content);
-						break;
-					case "C#":
-						out_content = Csharp.Run(exec_content);
-						break;
-					case "CSScript":
-						out_content = CSScript.Run(key_word.Replace("lang=CSScript;", "")+"\r\n"+exec_content);
-						break;
-					case "Python":
-                        out_content = Python.Run(key_word.Replace("lang=Python;", ""), exec_content);
-                        break;
-                }
-				System.Windows.Forms.Control.CheckForIllegalCrossThreadCalls = false;
-				tb.Text= out_content;
-				tb.Select();
-            });
+				if (key_ht["cron"] !=null)
+				{
+					cron = key_ht["cron"].ToString();
+				}
 
-            await Task.Run(doSomething);
-        }
-	}
+				var doSomething = new Action(() =>
+				{
+					String out_content = null;
+
+					switch (key_ht["lang"].ToString())
+					{
+						case "Print":
+							out_content = CSScript.Print(exec_content);
+							break;
+						case "Cmd":
+							out_content = Cmd.Run(exec_content);
+							break;
+						case "C#":
+							out_content = Csharp.Run(exec_content);
+							break;
+						case "CSScript":
+							out_content = CSScript.Run( exec_content);
+							break;
+						case "Python":
+							out_content = Python.Run(key_ht, exec_content);
+							break;
+					}
+					System.Windows.Forms.Control.CheckForIllegalCrossThreadCalls = false;
+					tb.Text = out_content;
+					tb.Select();
+				});
+
+			while (runc.Text=="停止")
+			{
+                if (cron != "")
+                    await Task.Delay(int.Parse(cron) * 1000);
+
+                await Task.Run(doSomething);
+            }
+				
+			}
+		}
+	 
 }

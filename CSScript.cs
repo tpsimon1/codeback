@@ -34,18 +34,9 @@ namespace codeback
 		
 	 
 		
-		 public static String Print(string key,string content)
+		 public static String Print(string content)
 		{ 
-		 	String[] _list  = key.Trim(';').Split(';');
-		 	 String[] keylist  = new string[_list.Length];
-		 	foreach (var element in _list) {
-		 		var element1 = element.Split('=');
-		 		if ( element1.Length ==2){
-		 		string keyindex =  Regex.Replace(element1[0], @"[^\d]*","");
-		 			Int64 _keyindex =  Convert.ToInt64(keyindex);
-		 			keylist[_keyindex] =  element1[1];
-		 		}
-		 	} 
+		 	
 		 	StringBuilder sb = new StringBuilder();
 		 	sb.Append(@"using System; 
 		 	using System.Data;
@@ -54,9 +45,7 @@ namespace codeback
 				public static string Test()
 				{ return String.Format(@"""+content.Replace("\"","\"\"")+@""", new object[]{");
 		 	
-		 	foreach (var element in keylist) {
-		 		sb.Append(element+",");
-		 	}
+		 
 		 	sb.Append("null});}}");  
 		 	return Run(sb.ToString());
 		}
