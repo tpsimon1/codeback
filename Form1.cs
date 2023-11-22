@@ -582,11 +582,27 @@ namespace codeback
 		void File_listViewDoubleClick(object sender, EventArgs e)
 		{
 			SQLiteHelper.SetSQLiteHelper(nowdbnumber);
-			SaveFileDialog sfd = new SaveFileDialog();
-			if (file_listView.SelectedCells == null)
-				return;
 
-			string filename = (string)file_listView.SelectedCells[0].Value;
+			if (file_listView.SelectedCells.Count == 0)
+			{
+                if (code.Length == 0)
+                {
+                    MessageBox.Show("请选择结点！");
+                    return;
+                }
+                //e.Effect = DragDropEffects.None;
+                SQLiteHelper.SetSQLiteHelper(nowdbnumber);
+				using (OpenFileDialog tmp = new OpenFileDialog())
+				{ if (tmp.ShowDialog() != DialogResult.OK)
+						return;
+					fileurl = tmp.FileNames;
+				}
+                save_file();
+                return;
+
+            }
+            SaveFileDialog sfd = new SaveFileDialog();
+            string filename = (string)file_listView.SelectedCells[0].Value;
 			sfd.FileName = filename;
 			if (sfd.ShowDialog() != DialogResult.OK)
 				return;
@@ -682,8 +698,7 @@ namespace codeback
 					ScriptRun.Run(key_ht, exec_content, comm_out,运行);
                 }
 
-
-
+				 
 
 
             } catch (Exception ex) {

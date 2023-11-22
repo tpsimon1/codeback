@@ -62,7 +62,9 @@ namespace codeback
 					System.Windows.Forms.Control.CheckForIllegalCrossThreadCalls = false;
 					tb.Text = out_content;
 					tb.Select();
-				});
+					runc.Text = "运行(&r)";
+
+                });
 
 			while (runc.Text=="停止")
 			{
