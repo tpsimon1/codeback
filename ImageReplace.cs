@@ -47,7 +47,7 @@ public static string ImageReplace(string html)
 
         var html = client.DownloadData(url);
         
-        client.DownloadFile(url, "1.jpg");
+        // client.DownloadFile(url, "1.jpg");
         Image img ;
 
     try

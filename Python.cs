@@ -67,7 +67,7 @@ namespace codeback
 
             p.WaitForExit();
 			p.Close();
-			//File.Delete("temp.py");
+			File.Delete("temp.py");
 			return strRst;
 			}
 		
