@@ -37,7 +37,7 @@ namespace codeback
 			p.StandardInput.AutoFlush = true; 
 			p.StandardInput.WriteLine(cmd); 
 			p.StandardInput.WriteLine("exit");
-			string strRst = p.StandardOutput.ReadToEnd();
+			string strRst = p.StandardOutput.ReadToEnd()+p.StandardError.ReadToEnd();
 			p.WaitForExit();
 			p.Close();
 			return strRst;

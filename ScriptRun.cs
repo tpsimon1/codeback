@@ -49,7 +49,10 @@ namespace codeback
 						case "Cmd":
 							out_content = Cmd.Run(exec_content);
 							break;
-						case "C#":
+                        case "PowerShell":
+                            out_content = PowerShell.Run(exec_content);
+                            break;
+                        case "C#":
 							out_content = Csharp.Run(exec_content);
 							break;
 						case "CSScript":
@@ -62,7 +65,7 @@ namespace codeback
 					System.Windows.Forms.Control.CheckForIllegalCrossThreadCalls = false;
 					tb.Text = out_content;
 					tb.Select();
-					runc.Text = "运行(&r)";
+					
 
                 });
 
@@ -70,8 +73,12 @@ namespace codeback
 			{
                 if (cron != "")
                     await Task.Delay(int.Parse(cron) * 1000);
+	 
 
                 await Task.Run(doSomething);
+
+                if (cron == "")
+                    runc.Text = "运行(&r)";
             }
 				
 			}
